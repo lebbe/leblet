@@ -1,0 +1,93 @@
+*,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+
+* {
+  font-size: inherit;
+  font-weight: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0e0f16;
+  color: #fff;
+  padding: 20px;
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+.weather {
+  border: rgba(229, 232, 255, 0.2) solid 1px;
+  background-color: #1a1c24;
+  padding: 16px;
+  border-radius: 10px;
+  outline-offset: 10px;
+  width: auto;
+  max-width: 600px;
+  margin-bottom: 16px;
+}
+
+.idag {
+  border: rgba(232, 234, 249, 0.2) solid 1px;
+  background-color: #313545;
+}
+
+.bilde {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 150px;
+}
+
+.forecast {
+  display: flex;
+  gap: 16px;
+}
+
+.detaljer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  /* vertical align content to bottom */
+  align-content: end;
+}
+
+.foreblokk {
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 100;
+}
+
+.tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(229, 232, 255, 0.2);
+  max-width: 600px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  transition: background-color 0.2s, color 0.2s;
+  background-color: #1a1c24;
+  color: #fff;
+  border-bottom: 0;
+}
+
+.tab.active {
+  background-color: #313545;
+  color: #fff;
+}

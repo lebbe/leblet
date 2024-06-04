@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather</title>
+    <link rel="stylesheet" href="weather.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Import script as a module-->
+    <script src="weather.js" async type="module"></script>
+  </head>
+  <body>
+    <div>
+      <div id="nå" class="weather idag"></div>
+      <nav class="tabs">
+        <button class="tab active" id="timerButton">Time for time</button>
+        <button class="tab" id="dagerButton">Dag for dag</button>
+      </nav>
+      <div id="timer"></div>
+      <div id="dager" style="display: hidden"></div>
+    </div>
+  </body>
+</html>

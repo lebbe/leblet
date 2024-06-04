@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KIOSK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .iframecontainer,
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+      }
+
+      body {
+        flex-direction: column;
+      }
+
+      iframe {
+        border: none;
+      }
+      .left-iframe {
+        width: 50%;
+        height: 100%;
+      }
+      .right-iframe {
+        width: 50%;
+        height: 100%;
+      }
+
+      .toggleNotat {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 16px;
+        font-family: "Noto Sans", sans-serif;
+        background-color: black;
+        color: white;
+        border: 1px solid #979797;
+      }
+
+      #notat {
+        height: 300px;
+        font-size: 24px;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="iframecontainer">
+      <iframe
+        src="https://mon.ruter.no/departures/59.87353-10.810273/N4Igrgzgpgwg9gGzAWwHYBkCGBPOYAuIAXAGaYLQA0IARnJgE4AmExA2qBPnAA4AKCTAGMoASRbsQAOQDKAJSIzu-QSKIBWABwAmACzqQAXWpMog7FCZLG+ACoBLZFGIAGagAt7TUxnuoorETAAL7UqCg0UAwA8iQAIlA8NmAMAcQAjG4g+Pb4CM5EIFjIkQz40PhRICb2EJg0+Uy2DJioEDxwZQCycKaBbLSQRtRQqPWNxPgMYFAeXlDNwgDW8EhoxGQUUKGcygLCYhJEA7IKSrz7alrp6cMgpuaW1mUOTq5z3qPofmlBoSDhEpRWIJJJlFK-TTUHJ5ApFTBAsoVKIANyg9lG1XutXGlkWbQ63V6vzYxhAo1xTA25CoIE8pkWQhWiBQqGpW2CZLRDAg9jgbKI2mCQA"
+        class="left-iframe"
+      ></iframe>
+      <iframe src="weather.html" class="right-iframe"></iframe>
+    </div>
+    <button class="toggleNotat">Skriv notat</button>
+
+    <textarea id="notat" style="display: none">sdf</textarea>
+
+    <script>
+      const button = document.querySelector(".toggleNotat");
+      const notat = document.querySelector("#notat");
+
+      button.addEventListener("click", () => {
+        if (notat.style.display === "none") {
+          notat.style.display = "block";
+        } else {
+          notat.style.display = "none";
+        }
+      });
+
+      notat.addEventListener("input", (e) => {
+        localStorage.setItem("notat", e.target.value);
+      });
+
+      notat.value = localStorage.getItem("notat");
+    </script>
+  </body>
+</html>
