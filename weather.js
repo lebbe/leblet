@@ -1,3 +1,5 @@
+import { weatherApiKey } from "./secrets.js";
+
 function round(value) {
   return Math.round(value * 10) / 10;
 }
@@ -224,10 +226,10 @@ function setupHourlyForecast(forecast) {
 
 (async function setup() {
   const weather = await fetch(
-    "https://api.openweathermap.org/data/2.5/weather?lat=59.9139&lon=10.7522&lang=no&units=metric&appid=APPID"
+    `https://api.openweathermap.org/data/2.5/weather?lat=59.9139&lon=10.7522&lang=no&units=metric&appid=${weatherApiKey}`
   ).then((res) => res.json());
   const forecast = await fetch(
-    "https://api.openweathermap.org/data/2.5/forecast?lat=59.9139&lon=10.7522&lang=no&units=metric&appid=APPID"
+    `https://api.openweathermap.org/data/2.5/forecast?lat=59.9139&lon=10.7522&lang=no&units=metric&appid=${weatherApiKey}`
   ).then((res) => res.json());
   setupNow(weather);
   setupForecast(weather, forecast);
