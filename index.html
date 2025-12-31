@@ -1,17 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Transport & Weather</title>
+    <title>Transport og vær</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="index-page">
     <div class="dashboard-container">
       <iframe id="transport-frame"></iframe>
-      <div id="weather-container"></div>
+      <div id="right-panel">
+        <!-- Quick Overview Panel -->
+        <div id="quick-overview">
+          <div id="current-weather">
+            <span id="current-icon">🌡️</span>
+            <span id="current-temp">--°C</span>
+          </div>
+          <div id="todo-summary"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="weather">Vær</button>
+          <button class="tab-btn" data-tab="todo">Gjøremål</button>
+          <button class="tab-btn" data-tab="notes">Notater</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <div id="weather-tab" class="tab-pane active">
+            <div id="weather-forecast"></div>
+          </div>
+          <div id="todo-tab" class="tab-pane">
+            <div id="todo-container">
+              <div class="todo-input-wrapper">
+                <input
+                  type="text"
+                  id="todo-input"
+                  placeholder="Legg til nytt gjøremål..."
+                />
+                <button id="todo-add-btn">Legg til</button>
+              </div>
+              <div id="todo-list"></div>
+            </div>
+          </div>
+          <div id="notes-tab" class="tab-pane">
+            <textarea id="notes-textarea" placeholder="Skriv notater her..."></textarea>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="index.js"></script>
+    <script src="todo.js"></script>
+    <script src="notes.js"></script>
   </body>
 </html>
