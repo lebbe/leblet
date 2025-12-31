@@ -118,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
       updateLocation(parseFloat(lat), parseFloat(lon))
     }
     document.getElementById('station-input').value = settings.stationInput || ''
+    if (settings.news !== undefined) {
+      document.getElementById('news-toggle').checked = settings.news
+    }
   }
 
   // Update the generate link with restored values
@@ -200,6 +203,8 @@ function updateGenerateLink() {
       if (mapAlt) {
         dashboardUrl.searchParams.set('alt', mapAlt)
       }
+      const newsToggle = document.getElementById('news-toggle')
+      dashboardUrl.searchParams.set('news', newsToggle.checked ? 'on' : 'off')
 
       // Save settings to localStorage
       const settings = {
@@ -207,6 +212,7 @@ function updateGenerateLink() {
         lon: mapLon,
         stationInput,
         transportUrl: stationInput,
+        news: newsToggle.checked,
       }
       localStorage.setItem('dashboardSettings', JSON.stringify(settings))
 
@@ -238,3 +244,6 @@ document
 document
   .getElementById('station-input')
   .addEventListener('input', updateGenerateLink)
+document
+  .getElementById('news-toggle')
+  .addEventListener('change', updateGenerateLink)
