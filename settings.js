@@ -195,8 +195,9 @@ function updateGenerateLink() {
 
       new URL(stationInput)
 
-      // Build dashboard URL
-      const dashboardUrl = new URL('/index.html', window.location.origin)
+      // Build dashboard URL (use relative path for GitHub Pages compatibility)
+      const basePath = window.location.pathname.replace(/\/[^/]*$/, '/')
+      const dashboardUrl = new URL(basePath + 'index.html', window.location.origin)
       dashboardUrl.searchParams.set('lat', mapLat)
       dashboardUrl.searchParams.set('lon', mapLon)
       dashboardUrl.searchParams.set('transport_url', stationInput)
