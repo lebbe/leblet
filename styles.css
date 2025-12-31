@@ -54,7 +54,7 @@ body.index-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 32px;
+  gap: 64px;
 }
 
 #current-weather {
@@ -92,6 +92,24 @@ body.index-page {
 #current-temp {
   font-size: 24px;
   font-weight: bold;
+}
+
+#sun-times {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: #b0b0b0;
+}
+
+.sun-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sun-emoji {
+  font-size: 22px;
 }
 
 #todo-summary {

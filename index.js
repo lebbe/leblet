@@ -180,6 +180,8 @@ const descriptionMap = {
 const currentIcon = document.getElementById('current-icon')
 const currentTemp = document.getElementById('current-temp')
 const weatherForecast = document.getElementById('weather-forecast')
+const sunriseTime = document.getElementById('sunrise-time')
+const sunsetTime = document.getElementById('sunset-time')
 
 // Tab switching functionality
 function initTabs() {
@@ -329,6 +331,47 @@ async function fetchWeather() {
   }
 }
 
+// Fetch sunrise and sunset times from MET.no
+async function fetchSunTimes() {
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const sunUrl = `https://api.met.no/weatherapi/sunrise/3.0/sun?lat=${lat}&lon=${lon}&date=${today}`
+
+    const response = await fetch(sunUrl)
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const properties = data.properties
+
+    if (properties.sunrise && properties.sunrise.time) {
+      const sunrise = new Date(properties.sunrise.time)
+      sunriseTime.textContent = sunrise.toLocaleTimeString('no-NO', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    } else {
+      sunriseTime.textContent = '--'
+    }
+
+    if (properties.sunset && properties.sunset.time) {
+      const sunset = new Date(properties.sunset.time)
+      sunsetTime.textContent = sunset.toLocaleTimeString('no-NO', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    } else {
+      sunsetTime.textContent = '--'
+    }
+  } catch (error) {
+    console.error('Error fetching sun times:', error)
+    sunriseTime.textContent = '--'
+    sunsetTime.textContent = '--'
+  }
+}
+
 // Transport iframe integration
 function initTransport() {
   const transportFrame = document.getElementById('transport-frame')
@@ -366,10 +409,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs()
   initTransport()
 
-  // Fetch weather data immediately and then every 15 minutes
+  // Fetch weather and sun data immediately and then periodically
   if (lat && lon) {
     fetchWeather()
-    setInterval(fetchWeather, 900000)
+    fetchSunTimes()
+    setInterval(fetchWeather, 900000) // Every 15 minutes
+    setInterval(fetchSunTimes, 3600000) // Every hour
   } else {
     currentIcon.innerHTML = '<span class="error-icon">!</span>'
     currentTemp.textContent = '--'
