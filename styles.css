@@ -722,19 +722,6 @@ button:active {
   color: #999;
 }
 
-/* Responsive styles */
-@media (max-width: 1024px) {
-  .dashboard-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 50vh 50vh;
-  }
-
-  #weather-container {
-    border-left: none;
-    border-top: 1px solid #333;
-  }
-}
-
 @media (max-width: 768px) {
   .location-picker {
     grid-template-columns: 1fr;
