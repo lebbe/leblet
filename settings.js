@@ -7,6 +7,7 @@
  * @property {string} [stationInput]
  * @property {string} [transportUrl]
  * @property {boolean} [news]
+ * @property {boolean} [clock]
  */
 
 /**
@@ -83,6 +84,9 @@ const defaultLocation = [59.91, 10.75] // Oslo
 const latInput = getRequiredElement('location-latitude', HTMLInputElement)
 const lonInput = getRequiredElement('location-longitude', HTMLInputElement)
 const altInput = getRequiredElement('location-altitude', HTMLInputElement)
+const stationInputEl = getRequiredElement('station-input', HTMLTextAreaElement)
+const newsToggle = getRequiredElement('news-toggle', HTMLInputElement)
+const clockToggle = getRequiredElement('clock-toggle', HTMLInputElement)
 
 /**
  * Initialize map on page load
@@ -204,15 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (lat && lon) {
       updateLocation(parseFloat(lat), parseFloat(lon))
     }
-    const stationInputEl = document.getElementById('station-input')
-    if (stationInputEl instanceof HTMLInputElement) {
-      stationInputEl.value = settings.stationInput || ''
-    }
+    stationInputEl.value = settings.stationInput || ''
     if (settings.news !== undefined) {
-      const newsToggleEl = document.getElementById('news-toggle')
-      if (newsToggleEl instanceof HTMLInputElement) {
-        newsToggleEl.checked = settings.news
-      }
+      newsToggle.checked = settings.news
+    }
+    if (settings.clock !== undefined) {
+      clockToggle.checked = settings.clock
     }
   }
 
@@ -314,13 +315,9 @@ function updateGenerateLink() {
   const mapLat = latInput.value
   const mapLon = lonInput.value
   const mapAlt = altInput.value
-  const stationInputEl = document.getElementById('station-input')
   const generateLink = document.getElementById('generate-link')
 
-  if (
-    stationInputEl instanceof HTMLInputElement === false ||
-    generateLink instanceof HTMLAnchorElement === false
-  ) {
+  if (generateLink instanceof HTMLAnchorElement === false) {
     return
   }
 
@@ -349,10 +346,8 @@ function updateGenerateLink() {
       if (mapAlt) {
         dashboardUrl.searchParams.set('alt', mapAlt)
       }
-      const newsToggle = document.getElementById('news-toggle')
-      if (newsToggle instanceof HTMLInputElement) {
-        dashboardUrl.searchParams.set('news', newsToggle.checked ? 'on' : 'off')
-      }
+      dashboardUrl.searchParams.set('news', newsToggle.checked ? 'on' : 'off')
+      dashboardUrl.searchParams.set('clock', clockToggle.checked ? 'on' : 'off')
 
       // Save settings to localStorage
       const settings = {
@@ -360,8 +355,8 @@ function updateGenerateLink() {
         lon: mapLon,
         stationInput,
         transportUrl: stationInput,
-        news:
-          newsToggle instanceof HTMLInputElement ? newsToggle.checked : false,
+        news: newsToggle.checked,
+        clock: clockToggle.checked,
       }
       localStorage.setItem('dashboardSettings', JSON.stringify(settings))
 
@@ -387,14 +382,7 @@ form.addEventListener('submit', (e) => {
 // Update link whenever location or station input changes
 latInput.addEventListener('change', updateGenerateLink)
 lonInput.addEventListener('change', updateGenerateLink)
-
-const stationInputEl2 = document.getElementById('station-input')
-if (stationInputEl2 instanceof HTMLInputElement) {
-  stationInputEl2.addEventListener('change', updateGenerateLink)
-  stationInputEl2.addEventListener('input', updateGenerateLink)
-}
-
-const newsToggleEl2 = document.getElementById('news-toggle')
-if (newsToggleEl2 instanceof HTMLInputElement) {
-  newsToggleEl2.addEventListener('change', updateGenerateLink)
-}
+stationInputEl.addEventListener('change', updateGenerateLink)
+stationInputEl.addEventListener('input', updateGenerateLink)
+newsToggle.addEventListener('change', updateGenerateLink)
+clockToggle.addEventListener('change', updateGenerateLink)

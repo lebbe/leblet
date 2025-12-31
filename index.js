@@ -31,6 +31,7 @@ const lat = params.get('lat')
 const lon = params.get('lon')
 const transport_url = params.get('transport_url')
 const alt = params.get('alt')
+const clockParam = params.get('clock')
 
 // Validate required parameters
 if (!lat) {
@@ -233,6 +234,14 @@ const sunsetTime = getRequiredElement('sunset-time', HTMLElement)
 const clockEl = getRequiredElement('clock', HTMLElement)
 
 /**
+ * Check if clock is enabled (defaults to on)
+ * @returns {boolean}
+ */
+function isClockEnabled() {
+  return clockParam !== 'off'
+}
+
+/**
  * Tab switching functionality
  * @returns {void}
  */
@@ -266,6 +275,12 @@ function initTabs() {
  * @returns {void}
  */
 function initClock() {
+  if (!isClockEnabled()) {
+    clockEl.style.display = 'none'
+    return
+  }
+
+  clockEl.style.display = 'block'
   const updateClock = () => {
     const now = new Date()
     const hours = String(now.getHours()).padStart(2, '0')
