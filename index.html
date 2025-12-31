@@ -1,104 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KIOSK</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      .iframecontainer,
-      html,
-      body {
-        margin: 0;
-        height: 100%;
-        width: 100%;
-        display: flex;
-      }
-
-      body {
-        flex-direction: column;
-      }
-
-      iframe {
-        border: none;
-      }
-      .splitContentVertical {
-        display: flex;
-        height: 100%;
-      }
-
-      .splitContentHorizontal {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-      }
-
-      .splitContentVertical > *,
-      .splitContentHorizontal > * {
-        flex: 1;
-      }
-
-      .entur {
-        /* Drag header out of the view. */
-        margin-top: -36px;
-      }
-
-      .toggleNotat {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        z-index: 1000;
-        padding: 16px;
-        font-family: "Noto Sans", sans-serif;
-        background-color: black;
-        color: white;
-        border: 1px solid #979797;
-      }
-
-      #notat {
-        height: 300px;
-        font-size: 24px;
-        padding: 8px;
-      }
-    </style>
+    <title>Transport og vær</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <div class="splitContentVertical">
-      <iframe src="weather.html" class="split-vertical"></iframe>
-      <div class="splitContentHorizontal">
-        <iframe
-          src="https://tavla.entur.no/Nc8XrEWestrOqa1JaHSR"
-          class="entur"
-        ></iframe>
-        <iframe src="todo.html" class="left-iframe"></iframe>
+  <body class="index-page">
+    <div class="dashboard-container">
+      <iframe id="transport-frame"></iframe>
+      <div id="right-panel">
+        <!-- Quick Overview Panel -->
+        <div id="quick-overview">
+          <div id="sun-times">
+            <span class="sun-item"
+              ><span class="sun-emoji">🌅</span>
+              <span id="sunrise-time">--:--</span></span
+            >
+            <span class="sun-item"
+              ><span class="sun-emoji">🌇</span>
+              <span id="sunset-time">--:--</span></span
+            >
+          </div>
+          <div id="current-weather">
+            <span id="current-icon">🌡️</span>
+            <span id="current-temp">--°C</span>
+          </div>
+          <div id="todo-summary"></div>
+        </div>
+
+        <!-- News Ticker -->
+        <div id="news-ticker">
+          <div id="news-ticker-content">Laster nyheter...</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="weather">Vær</button>
+          <button class="tab-btn" data-tab="todo">Gjøremål</button>
+          <button class="tab-btn" data-tab="notes">Notater</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <div id="weather-tab" class="tab-pane active">
+            <div id="weather-forecast"></div>
+          </div>
+          <div id="todo-tab" class="tab-pane">
+            <div id="todo-container">
+              <div class="todo-input-wrapper">
+                <input
+                  type="text"
+                  id="todo-input"
+                  placeholder="Legg til nytt gjøremål..."
+                />
+                <button id="todo-add-btn">Legg til</button>
+              </div>
+              <div id="todo-list"></div>
+            </div>
+          </div>
+          <div id="notes-tab" class="tab-pane">
+            <textarea
+              id="notes-textarea"
+              placeholder="Skriv notater her..."
+            ></textarea>
+          </div>
+        </div>
       </div>
     </div>
-    <button class="toggleNotat">Skriv notat</button>
 
-    <textarea id="notat" style="display: none">sdf</textarea>
-
-    <script>
-      const button = document.querySelector(".toggleNotat");
-      const notat = document.querySelector("#notat");
-
-      button.addEventListener("click", () => {
-        if (notat.style.display === "none") {
-          notat.style.display = "block";
-        } else {
-          notat.style.display = "none";
-        }
-      });
-
-      notat.addEventListener("input", (e) => {
-        localStorage.setItem("notat", e.target.value);
-      });
-
-      notat.value = localStorage.getItem("notat");
-    </script>
+    <script src="index.js"></script>
+    <script src="todo.js"></script>
+    <script src="notes.js"></script>
+    <script src="news.js"></script>
   </body>
 </html>

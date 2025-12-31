@@ -1,65 +1,143 @@
-// Get the todo list from localStorage or initialize an empty array
-const todoList = JSON.parse(localStorage.getItem("todos") || "[]");
+// Simple TODO application using localStorage
 
-// Function to render the todo list
-function renderTodoList() {
-  const todoContainer = document.getElementById("todo-container");
+const STORAGE_KEY = 'leblet-todos'
 
-  if (todoContainer instanceof HTMLElement === false) {
-    throw new Error("Element with id 'todo-container' not found");
-  }
-
-  todoContainer.innerHTML = "";
-
-  todoList.forEach((todo, index) => {
-    const todoItem = document.createElement("div");
-    todoItem.classList.add("todo-item");
-    todoItem.innerHTML = `
-			<input type="checkbox" ${
-        todo.completed ? "checked" : ""
-      } onchange="toggleTodoStatus(${index})">
-			<span>${todo.text}</span>
-			<button onclick="deleteTodo(${index})">Delete</button>
-		`;
-    todoContainer.appendChild(todoItem);
-  });
+// Get todos from localStorage
+function getTodos() {
+  const stored = localStorage.getItem(STORAGE_KEY)
+  return stored ? JSON.parse(stored) : []
 }
 
-// Function to add a new todo
-function addTodo() {
-  const todoInput = document.getElementById("todo-input");
-  if (todoInput instanceof HTMLInputElement === false) {
-    throw new Error("Element with id 'todo-input' not found");
-  }
+// Save todos to localStorage
+function saveTodos(todos) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+}
 
-  const todoText = todoInput.value.trim();
+// Generate unique ID
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2)
+}
 
-  if (todoText !== "") {
-    const newTodo = {
-      text: todoText,
-      completed: false,
-    };
+// Update todo summary in quick overview
+function updateTodoSummary() {
+  const summaryEl = document.getElementById('todo-summary')
+  if (!summaryEl) return
 
-    todoList.push(newTodo);
-    localStorage.setItem("todos", JSON.stringify(todoList));
-    todoInput.value = "";
-    renderTodoList();
+  const todos = getTodos()
+  const incomplete = todos.filter((t) => !t.completed)
+
+  if (incomplete.length === 0) {
+    summaryEl.textContent = ''
+  } else if (incomplete.length === 1) {
+    summaryEl.textContent = `📝 ${incomplete[0].text}`
+  } else {
+    summaryEl.textContent = `📝 ${incomplete.length} gjøremål`
   }
 }
 
-// Function to toggle the status of a todo
-function toggleTodoStatus(index) {
-  todoList[index].completed = !todoList[index].completed;
-  localStorage.setItem("todos", JSON.stringify(todoList));
-  renderTodoList();
+// Render todo list
+function renderTodos() {
+  const todoList = document.getElementById('todo-list')
+  const todos = getTodos()
+
+  // Update summary in quick overview
+  updateTodoSummary()
+
+  if (todos.length === 0) {
+    todoList.innerHTML =
+      '<div class="todo-empty">Ingen gjøremål ennå. Legg til et ovenfor!</div>'
+    return
+  }
+
+  todoList.innerHTML = todos
+    .map(
+      (todo) => `
+      <div class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${
+        todo.id
+      }">
+        <input 
+          type="checkbox" 
+          class="todo-checkbox" 
+          ${todo.completed ? 'checked' : ''}
+          onchange="toggleTodo('${todo.id}')"
+        />
+        <span class="todo-text">${escapeHtml(todo.text)}</span>
+        <button class="todo-delete" onclick="deleteTodo('${
+          todo.id
+        }')" title="Delete">×</button>
+      </div>
+    `
+    )
+    .join('')
 }
 
-// Function to delete a todo
-function deleteTodo(index) {
-  todoList.splice(index, 1);
-  localStorage.setItem("todos", JSON.stringify(todoList));
-  renderTodoList();
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  const div = document.createElement('div')
+  div.textContent = text
+  return div.innerHTML
 }
 
-// Render the initial todo list
-renderTodoList();
+// Add new todo
+function addTodo(text) {
+  if (!text.trim()) return
+
+  const todos = getTodos()
+  todos.push({
+    id: generateId(),
+    text: text.trim(),
+    completed: false,
+    createdAt: new Date().toISOString(),
+  })
+  saveTodos(todos)
+  renderTodos()
+}
+
+// Toggle todo completion
+function toggleTodo(id) {
+  const todos = getTodos()
+  const todo = todos.find((t) => t.id === id)
+  if (todo) {
+    todo.completed = !todo.completed
+    saveTodos(todos)
+    renderTodos()
+  }
+}
+
+// Delete todo
+function deleteTodo(id) {
+  const todos = getTodos().filter((t) => t.id !== id)
+  saveTodos(todos)
+  renderTodos()
+}
+
+// Initialize todo functionality
+function initTodo() {
+  const todoInput = document.getElementById('todo-input')
+  const addButton = document.getElementById('todo-add-btn')
+
+  // Add on button click
+  addButton.addEventListener('click', () => {
+    addTodo(todoInput.value)
+    todoInput.value = ''
+    todoInput.focus()
+  })
+
+  // Add on Enter key
+  todoInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      addTodo(todoInput.value)
+      todoInput.value = ''
+    }
+  })
+
+  // Initial render
+  renderTodos()
+}
+
+// Make functions available globally for inline event handlers
+window.toggleTodo = toggleTodo
+window.deleteTodo = deleteTodo
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initTodo)
