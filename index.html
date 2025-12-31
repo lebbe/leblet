@@ -27,19 +27,31 @@
       iframe {
         border: none;
       }
-      .left-iframe {
-        width: 50%;
+      .splitContentVertical {
+        display: flex;
         height: 100%;
       }
-      .right-iframe {
-        width: 50%;
-        height: 100%;
+
+      .splitContentHorizontal {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .splitContentVertical > *,
+      .splitContentHorizontal > * {
+        flex: 1;
+      }
+
+      .entur {
+        /* Drag header out of the view. */
+        margin-top: -36px;
       }
 
       .toggleNotat {
         position: absolute;
         bottom: 0;
-        right: 0;
+        left: 0;
         z-index: 1000;
         padding: 16px;
         font-family: "Noto Sans", sans-serif;
@@ -56,12 +68,15 @@
     </style>
   </head>
   <body>
-    <div class="iframecontainer">
-      <iframe src="weather.html" class="right-iframe"></iframe>
-      <iframe
-        src="https://tavla.entur.no/Nc8XrEWestrOqa1JaHSR"
-        class="left-iframe"
-      ></iframe>
+    <div class="splitContentVertical">
+      <iframe src="weather.html" class="split-vertical"></iframe>
+      <div class="splitContentHorizontal">
+        <iframe
+          src="https://tavla.entur.no/Nc8XrEWestrOqa1JaHSR"
+          class="entur"
+        ></iframe>
+        <iframe src="todo.html" class="left-iframe"></iframe>
+      </div>
     </div>
     <button class="toggleNotat">Skriv notat</button>
 
