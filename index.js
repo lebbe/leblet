@@ -230,6 +230,7 @@ const currentTemp = getRequiredElement('current-temp', HTMLElement)
 const weatherForecast = getRequiredElement('weather-forecast', HTMLElement)
 const sunriseTime = getRequiredElement('sunrise-time', HTMLElement)
 const sunsetTime = getRequiredElement('sunset-time', HTMLElement)
+const clockEl = getRequiredElement('clock', HTMLElement)
 
 /**
  * Tab switching functionality
@@ -258,6 +259,23 @@ function initTabs() {
       })
     })
   })
+}
+
+/**
+ * Initialize blinking clock in HH:MM format
+ * @returns {void}
+ */
+function initClock() {
+  const updateClock = () => {
+    const now = new Date()
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const blink = now.getSeconds() % 2 === 0 ? ':' : ' '
+    clockEl.textContent = `${hours}${blink}${minutes}`
+  }
+
+  updateClock()
+  setInterval(updateClock, 1000)
 }
 
 /**
@@ -496,6 +514,7 @@ function initTransport() {
 document.addEventListener('DOMContentLoaded', () => {
   initTabs()
   initTransport()
+  initClock()
 
   // Fetch weather and sun data immediately and then periodically
   if (lat && lon) {

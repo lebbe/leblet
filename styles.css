@@ -55,6 +55,7 @@ body.index-page {
   align-items: center;
   justify-content: center;
   gap: 64px;
+  position: relative;
 }
 
 #current-weather {
@@ -119,6 +120,14 @@ body.index-page {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+#clock {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  letter-spacing: 1px;
 }
 
 /* News Ticker */
