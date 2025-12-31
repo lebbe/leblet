@@ -123,11 +123,16 @@ body.index-page {
 }
 
 #clock {
+  position: absolute;
+  right: 16px;
+  top: 4px;
   font-size: 20px;
   font-weight: 600;
   color: #fff;
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: 1px;
+  white-space: nowrap;
+  z-index: 1;
 }
 
 /* News Ticker */

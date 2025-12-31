@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transport og vær</title>
-    <link rel="stylesheet" href="styles.css?v=1.0" />
+    <link rel="stylesheet" href="styles.css?v=1.1" />
   </head>
   <body class="index-page">
     <div class="dashboard-container">
       <iframe id="transport-frame"></iframe>
       <div id="right-panel">
         <!-- Quick Overview Panel -->
+        <div id="clock" aria-label="Klokke">--:--</div>
         <div id="quick-overview">
           <div id="sun-times">
             <span class="sun-item"
@@ -27,7 +28,6 @@
             <span id="current-temp">--°C</span>
           </div>
           <div id="todo-summary"></div>
-          <div id="clock" aria-label="Klokke">--:--</div>
         </div>
 
         <!-- News Ticker -->
