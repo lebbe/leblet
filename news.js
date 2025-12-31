@@ -1,8 +1,14 @@
 // News ticker using NRK RSS feed
 
 const RSS_URL = 'https://www.nrk.no/toppsaker.rss'
-const CORS_PROXY = 'https://api.allorigins.win/raw?url='
 const NEWS_REFRESH_INTERVAL = 600000 // 10 minutes
+
+// CORS proxies to try (in order of preference)
+const CORS_PROXIES = [
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+]
 
 // Check if news is enabled via URL parameter
 function isNewsEnabled() {
@@ -12,18 +18,29 @@ function isNewsEnabled() {
   return newsParam !== 'off'
 }
 
+// Try fetching with multiple CORS proxies
+async function fetchWithProxy(url) {
+  for (const proxyFn of CORS_PROXIES) {
+    try {
+      const proxyUrl = proxyFn(url)
+      const response = await fetch(proxyUrl)
+      if (response.ok) {
+        return await response.text()
+      }
+    } catch (e) {
+      // Try next proxy
+      continue
+    }
+  }
+  throw new Error('All CORS proxies failed')
+}
+
 // Fetch and parse RSS feed
 async function fetchNews() {
   const tickerContent = document.getElementById('news-ticker-content')
 
   try {
-    const response = await fetch(CORS_PROXY + encodeURIComponent(RSS_URL))
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const xmlText = await response.text()
+    const xmlText = await fetchWithProxy(RSS_URL)
     const parser = new DOMParser()
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml')
 
