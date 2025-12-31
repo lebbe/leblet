@@ -17,63 +17,163 @@ if (!transport_url) {
 }
 
 // Weather icon mapping based on MET.no symbol codes
+// Maps symbol codes to SVG icon filenames in /icons folder
 const iconMap = {
-  clearsky_day: '☀️',
-  clearsky_night: '🌙',
-  clearsky: '☀️',
-  fair_day: '🌤️',
-  fair_night: '🌤️',
-  fair: '🌤️',
-  partlycloudy_day: '⛅',
-  partlycloudy_night: '⛅',
-  partlycloudy: '⛅',
-  cloudy: '☁️',
-  rainshowers_day: '🌦️',
-  rainshowers_night: '🌧️',
-  rainshowers: '🌦️',
-  rain: '🌧️',
-  lightrainshowers_day: '🌦️',
-  lightrainshowers_night: '🌧️',
-  lightrainshowers: '🌦️',
-  lightrain: '🌧️',
-  heavyrain: '🌧️',
-  heavyrainshowers_day: '🌧️',
-  heavyrainshowers_night: '🌧️',
-  rainthunder_day: '⛈️',
-  rainthunder_night: '⛈️',
-  rainthunder: '⛈️',
-  sleet: '🧊',
-  sleetshowers_day: '🧊',
-  sleetshowers_night: '🧊',
-  snow: '❄️',
-  snowshowers_day: '🌨️',
-  snowshowers_night: '🌨️',
-  snowshowers: '🌨️',
-  lightsnow: '❄️',
-  heavysnow: '❄️',
-  fog: '🌫️',
+  // Clear sky
+  clearsky_day: 'clearsky_day',
+  clearsky_night: 'clearsky_night',
+  clearsky_polartwilight: 'clearsky_polartwilight',
+  // Fair
+  fair_day: 'fair_day',
+  fair_night: 'fair_night',
+  fair_polartwilight: 'fair_polartwilight',
+  // Partly cloudy
+  partlycloudy_day: 'partlycloudy_day',
+  partlycloudy_night: 'partlycloudy_night',
+  partlycloudy_polartwilight: 'partlycloudy_polartwilight',
+  // Cloudy
+  cloudy: 'cloudy',
+  // Fog
+  fog: 'fog',
+  // Rain
+  lightrain: 'lightrain',
+  rain: 'rain',
+  heavyrain: 'heavyrain',
+  // Rain showers
+  lightrainshowers_day: 'lightrainshowers_day',
+  lightrainshowers_night: 'lightrainshowers_night',
+  lightrainshowers_polartwilight: 'lightrainshowers_polartwilight',
+  rainshowers_day: 'rainshowers_day',
+  rainshowers_night: 'rainshowers_night',
+  rainshowers_polartwilight: 'rainshowers_polartwilight',
+  heavyrainshowers_day: 'heavyrainshowers_day',
+  heavyrainshowers_night: 'heavyrainshowers_night',
+  heavyrainshowers_polartwilight: 'heavyrainshowers_polartwilight',
+  // Rain and thunder
+  lightrainandthunder: 'lightrainandthunder',
+  rainandthunder: 'rainandthunder',
+  heavyrainandthunder: 'heavyrainandthunder',
+  lightrainshowersandthunder_day: 'lightrainshowersandthunder_day',
+  lightrainshowersandthunder_night: 'lightrainshowersandthunder_night',
+  lightrainshowersandthunder_polartwilight:
+    'lightrainshowersandthunder_polartwilight',
+  rainshowersandthunder_day: 'rainshowersandthunder_day',
+  rainshowersandthunder_night: 'rainshowersandthunder_night',
+  rainshowersandthunder_polartwilight: 'rainshowersandthunder_polartwilight',
+  heavyrainshowersandthunder_day: 'heavyrainshowersandthunder_day',
+  heavyrainshowersandthunder_night: 'heavyrainshowersandthunder_night',
+  heavyrainshowersandthunder_polartwilight:
+    'heavyrainshowersandthunder_polartwilight',
+  // Sleet
+  lightsleet: 'lightsleet',
+  sleet: 'sleet',
+  heavysleet: 'heavysleet',
+  // Sleet showers
+  lightsleetshowers_day: 'lightsleetshowers_day',
+  lightsleetshowers_night: 'lightsleetshowers_night',
+  lightsleetshowers_polartwilight: 'lightsleetshowers_polartwilight',
+  sleetshowers_day: 'sleetshowers_day',
+  sleetshowers_night: 'sleetshowers_night',
+  sleetshowers_polartwilight: 'sleetshowers_polartwilight',
+  heavysleetshowers_day: 'heavysleetshowers_day',
+  heavysleetshowers_night: 'heavysleetshowers_night',
+  heavysleetshowers_polartwilight: 'heavysleetshowers_polartwilight',
+  // Sleet and thunder
+  lightsleetandthunder: 'lightsleetandthunder',
+  sleetandthunder: 'sleetandthunder',
+  heavysleetandthunder: 'heavysleetandthunder',
+  lightssleetshowersandthunder_day: 'lightssleetshowersandthunder_day',
+  lightssleetshowersandthunder_night: 'lightssleetshowersandthunder_night',
+  lightssleetshowersandthunder_polartwilight:
+    'lightssleetshowersandthunder_polartwilight',
+  sleetshowersandthunder_day: 'sleetshowersandthunder_day',
+  sleetshowersandthunder_night: 'sleetshowersandthunder_night',
+  sleetshowersandthunder_polartwilight: 'sleetshowersandthunder_polartwilight',
+  heavysleetshowersandthunder_day: 'heavysleetshowersandthunder_day',
+  heavysleetshowersandthunder_night: 'heavysleetshowersandthunder_night',
+  heavysleetshowersandthunder_polartwilight:
+    'heavysleetshowersandthunder_polartwilight',
+  // Snow
+  lightsnow: 'lightsnow',
+  snow: 'snow',
+  heavysnow: 'heavysnow',
+  // Snow showers
+  lightsnowshowers_day: 'lightsnowshowers_day',
+  lightsnowshowers_night: 'lightsnowshowers_night',
+  lightsnowshowers_polartwilight: 'lightsnowshowers_polartwilight',
+  snowshowers_day: 'snowshowers_day',
+  snowshowers_night: 'snowshowers_night',
+  snowshowers_polartwilight: 'snowshowers_polartwilight',
+  heavysnowshowers_day: 'heavysnowshowers_day',
+  heavysnowshowers_night: 'heavysnowshowers_night',
+  heavysnowshowers_polartwilight: 'heavysnowshowers_polartwilight',
+  // Snow and thunder
+  lightsnowandthunder: 'lightsnowandthunder',
+  snowandthunder: 'snowandthunder',
+  heavysnowandthunder: 'heavysnowandthunder',
+  lightssnowshowersandthunder_day: 'lightssnowshowersandthunder_day',
+  lightssnowshowersandthunder_night: 'lightssnowshowersandthunder_night',
+  lightssnowshowersandthunder_polartwilight:
+    'lightssnowshowersandthunder_polartwilight',
+  snowshowersandthunder_day: 'snowshowersandthunder_day',
+  snowshowersandthunder_night: 'snowshowersandthunder_night',
+  snowshowersandthunder_polartwilight: 'snowshowersandthunder_polartwilight',
+  heavysnowshowersandthunder_day: 'heavysnowshowersandthunder_day',
+  heavysnowshowersandthunder_night: 'heavysnowshowersandthunder_night',
+  heavysnowshowersandthunder_polartwilight:
+    'heavysnowshowersandthunder_polartwilight',
 }
 
 // Weather description mapping
 const descriptionMap = {
+  // Clear/fair
   clearsky: 'Klart',
   fair: 'Lettskyet',
   partlycloudy: 'Delvis skyet',
   cloudy: 'Skyet',
-  rainshowers: 'Regnbyger',
-  rain: 'Regn',
-  lightrainshowers: 'Lette regnbyger',
-  lightrain: 'Lett regn',
-  heavyrain: 'Kraftig regn',
-  heavyrainshowers: 'Kraftige regnbyger',
-  rainthunder: 'Tordenvær',
-  sleet: 'Sludd',
-  sleetshowers: 'Sluddbyger',
-  snow: 'Snø',
-  snowshowers: 'Snøbyger',
-  lightsnow: 'Lett snø',
-  heavysnow: 'Kraftig snø',
   fog: 'Tåke',
+  // Rain
+  lightrain: 'Lett regn',
+  rain: 'Regn',
+  heavyrain: 'Kraftig regn',
+  lightrainshowers: 'Lette regnbyger',
+  rainshowers: 'Regnbyger',
+  heavyrainshowers: 'Kraftige regnbyger',
+  // Rain and thunder
+  lightrainandthunder: 'Lett regn og torden',
+  rainandthunder: 'Regn og torden',
+  heavyrainandthunder: 'Kraftig regn og torden',
+  lightrainshowersandthunder: 'Lette regnbyger og torden',
+  rainshowersandthunder: 'Regnbyger og torden',
+  heavyrainshowersandthunder: 'Kraftige regnbyger og torden',
+  // Sleet
+  lightsleet: 'Lett sludd',
+  sleet: 'Sludd',
+  heavysleet: 'Kraftig sludd',
+  lightsleetshowers: 'Lette sluddbyger',
+  sleetshowers: 'Sluddbyger',
+  heavysleetshowers: 'Kraftige sluddbyger',
+  // Sleet and thunder
+  lightsleetandthunder: 'Lett sludd og torden',
+  sleetandthunder: 'Sludd og torden',
+  heavysleetandthunder: 'Kraftig sludd og torden',
+  lightssleetshowersandthunder: 'Lette sluddbyger og torden',
+  sleetshowersandthunder: 'Sluddbyger og torden',
+  heavysleetshowersandthunder: 'Kraftige sluddbyger og torden',
+  // Snow
+  lightsnow: 'Lett snø',
+  snow: 'Snø',
+  heavysnow: 'Kraftig snø',
+  lightsnowshowers: 'Lette snøbyger',
+  snowshowers: 'Snøbyger',
+  heavysnowshowers: 'Kraftige snøbyger',
+  // Snow and thunder
+  lightsnowandthunder: 'Lett snø og torden',
+  snowandthunder: 'Snø og torden',
+  heavysnowandthunder: 'Kraftig snø og torden',
+  lightssnowshowersandthunder: 'Lette snøbyger og torden',
+  snowshowersandthunder: 'Snøbyger og torden',
+  heavysnowshowersandthunder: 'Kraftige snøbyger og torden',
 }
 
 // DOM elements
@@ -105,15 +205,16 @@ function initTabs() {
   })
 }
 
-// Get icon for symbol code
-function getIcon(symbolCode) {
-  const baseSymbol = symbolCode.replace(/_day|_night/, '')
-  return iconMap[symbolCode] || iconMap[baseSymbol] || '🌡️'
+// Get icon HTML for symbol code
+function getIcon(symbolCode, size = 48) {
+  const iconName = iconMap[symbolCode] || symbolCode
+  return `<img src="icons/${iconName}.svg" alt="${symbolCode}" width="${size}" height="${size}" />`
 }
 
 // Get description for symbol code
 function getDescription(symbolCode) {
-  const baseSymbol = symbolCode.replace(/_day|_night/, '')
+  // Remove _day, _night, _polartwilight suffixes for description lookup
+  const baseSymbol = symbolCode.replace(/_(day|night|polartwilight)$/, '')
   return descriptionMap[baseSymbol] || symbolCode
 }
 
@@ -147,25 +248,37 @@ function renderCurrentWeather(current) {
     current.data.next_6_hours?.summary?.symbol_code ||
     'cloudy'
 
-  currentIcon.textContent = getIcon(symbolCode)
+  currentIcon.innerHTML = getIcon(symbolCode, 40)
   currentTemp.textContent = `${Math.round(temperature)}°C`
 }
 
 // Render weather forecast
 function renderForecast(timeseries) {
-  // Get forecast for next 24 hours, every 3 hours
   const now = new Date()
-  const forecastItems = timeseries.filter((item, index) => {
+  const forecastItems = []
+  let lastIncludedTime = null
+
+  for (const item of timeseries) {
     const itemTime = new Date(item.time)
     const hoursFromNow = (itemTime - now) / (1000 * 60 * 60)
-    // Include items from 0-24 hours, roughly every 3 hours
-    return hoursFromNow >= 0 && hoursFromNow <= 24 && index % 3 === 0
-  })
 
-  // Take up to 8 forecast items
-  const displayItems = forecastItems.slice(0, 8)
+    // Only include items within next 24 hours
+    if (hoursFromNow < 0 || hoursFromNow > 24) continue
 
-  weatherForecast.innerHTML = displayItems
+    // Include if it's the first item or at least 3 hours since last included
+    if (
+      lastIncludedTime === null ||
+      (itemTime - lastIncludedTime) / (1000 * 60 * 60) >= 3
+    ) {
+      forecastItems.push(item)
+      lastIncludedTime = itemTime
+    }
+
+    // Stop after 8 items
+    if (forecastItems.length >= 8) break
+  }
+
+  weatherForecast.innerHTML = forecastItems
     .map((item) => {
       const temp = item.data.instant.details.air_temperature
       const symbolCode =
@@ -209,7 +322,7 @@ async function fetchWeather() {
     renderForecast(timeseries)
   } catch (error) {
     console.error('Error fetching weather:', error)
-    currentIcon.textContent = '⚠️'
+    currentIcon.innerHTML = '<span class="error-icon">!</span>'
     currentTemp.textContent = 'Feil'
     weatherForecast.innerHTML =
       '<div class="forecast-item">Kunne ikke laste værdata</div>'
@@ -258,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchWeather()
     setInterval(fetchWeather, 900000)
   } else {
-    currentIcon.textContent = '⚠️'
+    currentIcon.innerHTML = '<span class="error-icon">!</span>'
     currentTemp.textContent = '--'
     weatherForecast.innerHTML =
       '<div class="forecast-item">Mangler posisjonsdata</div>'
