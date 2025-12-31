@@ -3,102 +3,211 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KIOSK</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-      rel="stylesheet"
-    />
+    <title>Transport & Weather</title>
     <style>
-      .iframecontainer,
-      html,
-      body {
+      * {
         margin: 0;
-        height: 100%;
-        width: 100%;
-        display: flex;
+        padding: 0;
+        box-sizing: border-box;
       }
 
       body {
-        flex-direction: column;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        height: 100vh;
+        overflow: hidden;
       }
 
-      iframe {
-        border: none;
-      }
-      .splitContentVertical {
-        display: flex;
-        height: 100%;
+      .container {
+        display: grid;
+        grid-template-columns: 50vw 50vw;
+        grid-template-rows: 1fr;
+        height: 100vh;
+        gap: 0;
       }
 
-      .splitContentHorizontal {
-        display: flex;
-        flex-direction: column;
+      #transport-frame {
         width: 100%;
+        height: 100%;
+        border: none;
+        background-color: #242424;
       }
 
-      .splitContentVertical > *,
-      .splitContentHorizontal > * {
-        flex: 1;
+      #weather-container {
+        width: 100%;
+        height: 100%;
+        background-color: #1a1a1a;
+        padding: 24px;
+        overflow-y: auto;
+        border-left: 1px solid #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
 
-      .entur {
-        /* Drag header out of the view. */
-        margin-top: -36px;
+      .weather-content {
+        text-align: center;
       }
 
-      .toggleNotat {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        z-index: 1000;
+      .weather-icon {
+        font-size: 64px;
+        margin: 16px 0;
+      }
+
+      .weather-temperature {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 16px 0;
+      }
+
+      .weather-description {
+        font-size: 18px;
+        color: #b0b0b0;
+        margin-top: 12px;
+      }
+
+      .weather-error {
+        color: #ff6b6b;
         padding: 16px;
-        font-family: "Noto Sans", sans-serif;
-        background-color: black;
-        color: white;
-        border: 1px solid #979797;
+        text-align: center;
       }
 
-      #notat {
-        height: 300px;
-        font-size: 24px;
-        padding: 8px;
+      @media (max-width: 1024px) {
+        .container {
+          grid-template-columns: 1fr;
+          grid-template-rows: 50vh 50vh;
+        }
+
+        #weather-container {
+          border-left: none;
+          border-top: 1px solid #333;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="splitContentVertical">
-      <iframe src="weather.html" class="split-vertical"></iframe>
-      <div class="splitContentHorizontal">
-        <iframe
-          src="https://tavla.entur.no/Nc8XrEWestrOqa1JaHSR"
-          class="entur"
-        ></iframe>
-        <iframe src="todo.html" class="left-iframe"></iframe>
-      </div>
+    <div class="container">
+      <iframe id="transport-frame"></iframe>
+      <div id="weather-container"></div>
     </div>
-    <button class="toggleNotat">Skriv notat</button>
-
-    <textarea id="notat" style="display: none">sdf</textarea>
 
     <script>
-      const button = document.querySelector(".toggleNotat");
-      const notat = document.querySelector("#notat");
+      // Extract URL parameters
+      const params = new URLSearchParams(window.location.search)
+      const lat = params.get('lat')
+      const lon = params.get('lon')
+      const transport_url = params.get('transport_url')
 
-      button.addEventListener("click", () => {
-        if (notat.style.display === "none") {
-          notat.style.display = "block";
-        } else {
-          notat.style.display = "none";
+      // Validate required parameters
+      if (!lat) {
+        console.error('Missing required parameter: lat')
+      }
+      if (!lon) {
+        console.error('Missing required parameter: lon')
+      }
+      if (!transport_url) {
+        console.error('Missing required parameter: transport_url')
+      }
+
+      // Weather icon mapping based on MET.no symbol codes
+      const iconMap = {
+        clearsky_day: '☀️',
+        clearsky_night: '🌙',
+        fair_day: '🌤️',
+        fair_night: '🌤️',
+        partlycloudy_day: '⛅',
+        partlycloudy_night: '⛅',
+        cloudy: '☁️',
+        rainshowers_day: '🌦️',
+        rainshowers_night: '🌧️',
+        rain: '🌧️',
+        rainthunder_day: '⛈️',
+        rainthunder_night: '⛈️',
+        sleet: '🧊',
+        snow: '❄️',
+        snowshowers_day: '🌨️',
+        snowshowers_night: '🌨️',
+        fog: '🌫️',
+      }
+
+      const weatherContainer = document.getElementById('weather-container')
+
+      async function fetchWeather() {
+        try {
+          const response = await fetch(
+            `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`
+          )
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+
+          const data = await response.json()
+          const current = data.properties.timeseries[0]
+          const temperature = current.data.instant.details.air_temperature
+          const symbolCode =
+            current.data.next_1_hours?.summary?.symbol_code ||
+            current.data.next_6_hours?.summary?.symbol_code ||
+            'cloudy'
+
+          // Extract base symbol code (remove _day/_night suffix for mapping)
+          const baseSymbol = symbolCode.replace(/_day|_night/, '')
+          const icon = iconMap[symbolCode] || iconMap[baseSymbol] || '🌡️'
+
+          weatherContainer.innerHTML = `
+            <div class="weather-content">
+              <div class="weather-icon">${icon}</div>
+              <div class="weather-temperature">${temperature}°C</div>
+              <div class="weather-description">${symbolCode}</div>
+            </div>
+          `
+        } catch (error) {
+          console.error('Error fetching weather:', error)
+          weatherContainer.innerHTML = `<div class="weather-error">Unable to load weather data</div>`
         }
-      });
+      }
 
-      notat.addEventListener("input", (e) => {
-        localStorage.setItem("notat", e.target.value);
-      });
+      // Fetch weather data immediately and then every 15 minutes
+      if (lat && lon) {
+        fetchWeather()
+        setInterval(fetchWeather, 900000)
+      } else {
+        weatherContainer.innerHTML = `<div class="weather-error">Missing latitude and longitude parameters</div>`
+      }
 
-      notat.value = localStorage.getItem("notat");
+      // Transport iframe integration
+      const transportFrame = document.getElementById('transport-frame')
+
+      if (transport_url) {
+        // Validate that the URL is from supported providers
+        const supportedDomains = ['tavle.entur.no', 'tavla.entur.no']
+        let isSupported = false
+
+        try {
+          const url = new URL(transport_url)
+          isSupported = supportedDomains.some((domain) =>
+            url.hostname.includes(domain)
+          )
+        } catch {
+          console.error('Invalid transport_url format:', transport_url)
+        }
+
+        if (isSupported) {
+          transportFrame.src = transport_url
+        } else {
+          console.error(
+            'Unsupported transport provider. Supported domains: ' +
+              supportedDomains.join(', ')
+          )
+          transportFrame.src = 'about:blank'
+        }
+      } else {
+        console.error('Missing required parameter: transport_url')
+        transportFrame.src = 'about:blank'
+      }
     </script>
   </body>
 </html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Settings</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 32px;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #d0d0d0;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        background-color: #242424;
+        color: #e0e0e0;
+        font-family: inherit;
+        font-size: 14px;
+        transition: border-color 0.2s;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #4a9eff;
+        box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #666;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .form-row .form-group {
+        margin-bottom: 0;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #4a9eff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-top: 24px;
+      }
+
+      button:hover {
+        background-color: #357abd;
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      .info-text {
+        font-size: 12px;
+        color: #888;
+        margin-top: 4px;
+      }
+
+      .error {
+        color: #ff6b6b;
+        padding: 12px;
+        border-radius: 4px;
+        background-color: rgba(255, 107, 107, 0.1);
+        margin-bottom: 24px;
+        display: none;
+      }
+
+      .error.show {
+        display: block;
+      }
+
+      .success {
+        color: #51cf66;
+        padding: 12px;
+        border-radius: 4px;
+        background-color: rgba(81, 207, 102, 0.1);
+        margin-bottom: 24px;
+        display: none;
+      }
+
+      .success.show {
+        display: block;
+      }
+
+      .url-container {
+        background-color: #242424;
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 16px;
+        margin-top: 24px;
+        display: none;
+      }
+
+      .url-container.show {
+        display: block;
+      }
+
+      .url-label {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .url-display {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #4a9eff;
+        word-break: break-all;
+        font-family: 'Monaco', 'Courier New', monospace;
+        margin-bottom: 12px;
+        max-height: 100px;
+        overflow-y: auto;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .button-group button {
+        margin-top: 0;
+      }
+
+      .copy-btn {
+        background-color: #51cf66;
+      }
+
+      .copy-btn:hover {
+        background-color: #40c057;
+      }
+
+      .entur-link {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #4a9eff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        margin-top: 4px;
+      }
+
+      .entur-link:hover {
+        background-color: #357abd;
+      }
+
+      @media (max-width: 768px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Dashboard Settings</h1>
+
+      <div class="error" id="error-message"></div>
+      <div class="success" id="success-message"></div>
+
+      <form id="settings-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="latitude">Latitude</label>
+            <input
+              type="number"
+              id="latitude"
+              name="latitude"
+              placeholder="e.g., 60.10"
+              step="0.01"
+              min="-90"
+              max="90"
+              required
+            />
+            <div class="info-text">Range: -90 to 90</div>
+          </div>
+
+          <div class="form-group">
+            <label for="longitude">Longitude</label>
+            <input
+              type="number"
+              id="longitude"
+              name="longitude"
+              placeholder="e.g., 9.58"
+              step="0.01"
+              min="-180"
+              max="180"
+              required
+            />
+            <div class="info-text">Range: -180 to 180</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="station-input">Board URL</label>
+          <textarea
+            id="station-input"
+            name="station-input"
+            placeholder="Enter the full board URL (e.g., https://tavla.entur.no/Nc8XrEWestrOqa1JaHSR)"
+            rows="4"
+            required
+          ></textarea>
+          <div class="info-text">
+            Copy the URL from tavla.entur.no
+          </div>
+          <a href="https://tavla.entur.no" target="_blank" class="entur-link">Open Entur →</a>
+        </div>
+
+        <button type="submit">Generate Dashboard</button>
+      </form>
+
+      <div class="url-container" id="url-container">
+        <div class="url-label">Generated Dashboard URL</div>
+        <div class="url-display" id="generated-url"></div>
+        <div class="button-group">
+          <button type="button" class="copy-btn" id="copy-btn">
+            Copy to Clipboard
+          </button>
+          <button type="button" id="open-btn">Open Dashboard</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById('settings-form')
+      const errorDiv = document.getElementById('error-message')
+      const successDiv = document.getElementById('success-message')
+
+      // Load saved settings from localStorage
+      window.addEventListener('DOMContentLoaded', () => {
+        const saved = localStorage.getItem('dashboardSettings')
+        if (saved) {
+          const settings = JSON.parse(saved)
+          document.getElementById('latitude').value = settings.lat || ''
+          document.getElementById('longitude').value = settings.lon || ''
+          document.getElementById('station-input').value =
+            settings.stationInput || ''
+        }
+      })
+
+      function showError(message) {
+        errorDiv.textContent = message
+        errorDiv.classList.add('show')
+        successDiv.classList.remove('show')
+      }
+
+      function showSuccess(message) {
+        successDiv.textContent = message
+        successDiv.classList.add('show')
+        errorDiv.classList.remove('show')
+      }
+
+      function generateDashboardUrl(lat, lon, transportUrl) {
+        const dashboardUrl = new URL('/index.html', window.location.origin)
+        dashboardUrl.searchParams.set('lat', lat)
+        dashboardUrl.searchParams.set('lon', lon)
+        dashboardUrl.searchParams.set('transport_url', transportUrl)
+        return dashboardUrl.toString()
+      }
+
+      function copyToClipboard(text) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            showSuccess('URL copied to clipboard!')
+          })
+          .catch(() => {
+            showError('Failed to copy URL to clipboard')
+          })
+      }
+
+      function displayGeneratedUrl(dashboardUrl) {
+        const urlContainer = document.getElementById('url-container')
+        const urlDisplay = document.getElementById('generated-url')
+        const copyBtn = document.getElementById('copy-btn')
+        const openBtn = document.getElementById('open-btn')
+
+        urlDisplay.textContent = dashboardUrl
+        urlContainer.classList.add('show')
+
+        copyBtn.onclick = () => copyToClipboard(dashboardUrl)
+        openBtn.onclick = () => {
+          window.location.href = dashboardUrl
+        }
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault()
+
+        const lat = document.getElementById('latitude').value
+        const lon = document.getElementById('longitude').value
+        const stationInput = document
+          .getElementById('station-input')
+          .value.trim()
+
+        // Validation
+        if (!lat || !lon) {
+          showError('Please enter both latitude and longitude')
+          return
+        }
+
+        if (!stationInput) {
+          showError('Please enter a board URL')
+          return
+        }
+
+        try {
+          // For Entur, expect a full URL
+          if (!stationInput.startsWith('http')) {
+            showError('Please enter the full board URL from tavla.entur.no')
+            return
+          }
+
+          // Validate transport URL
+          new URL(stationInput)
+
+          // Save settings to localStorage
+          const settings = {
+            lat,
+            lon,
+            stationInput,
+            transportUrl: stationInput,
+          }
+          localStorage.setItem('dashboardSettings', JSON.stringify(settings))
+
+          // Generate dashboard URL
+          const dashboardUrl = generateDashboardUrl(lat, lon, stationInput)
+
+          showSuccess(
+            'Settings saved! Use the URL below to access your dashboard.'
+          )
+          displayGeneratedUrl(dashboardUrl)
+        } catch (error) {
+          showError('Invalid URL format. Please check your input.')
+          console.error('Error:', error)
+        }
+      })
+    </script>
+  </body>
+</html>
