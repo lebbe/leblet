@@ -1,24 +1,60 @@
 // Simple TODO application using localStorage
 
+/**
+ * Require a DOM element by id and type.
+ * @template {HTMLElement} T
+ * @param {string} id
+ * @param {new (...args: any[]) => T} ctor
+ * @returns {T}
+ */
+function getRequiredElement(id, ctor) {
+  const el = document.getElementById(id)
+  if (!el || !(el instanceof ctor)) {
+    throw new Error(`Element #${id} missing or not a ${ctor.name}`)
+  }
+  return /** @type {T} */ (el)
+}
+
+/**
+ * @typedef {Object} Todo
+ * @property {string} id - Unique identifier
+ * @property {string} text - Todo text content
+ * @property {boolean} completed - Whether the todo is completed
+ * @property {string} createdAt - ISO date string when created
+ */
+
 const STORAGE_KEY = 'leblet-todos'
 
-// Get todos from localStorage
+/**
+ * Get todos from localStorage
+ * @returns {Todo[]}
+ */
 function getTodos() {
   const stored = localStorage.getItem(STORAGE_KEY)
   return stored ? JSON.parse(stored) : []
 }
 
-// Save todos to localStorage
+/**
+ * Save todos to localStorage
+ * @param {Todo[]} todos
+ * @returns {void}
+ */
 function saveTodos(todos) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
 }
 
-// Generate unique ID
+/**
+ * Generate unique ID
+ * @returns {string}
+ */
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
-// Update todo summary in quick overview
+/**
+ * Update todo summary in quick overview
+ * @returns {void}
+ */
 function updateTodoSummary() {
   const summaryEl = document.getElementById('todo-summary')
   if (!summaryEl) return
@@ -35,9 +71,12 @@ function updateTodoSummary() {
   }
 }
 
-// Render todo list
+/**
+ * Render todo list
+ * @returns {void}
+ */
 function renderTodos() {
-  const todoList = document.getElementById('todo-list')
+  const todoList = getRequiredElement('todo-list', HTMLElement)
   const todos = getTodos()
 
   // Update summary in quick overview
@@ -71,14 +110,22 @@ function renderTodos() {
     .join('')
 }
 
-// Escape HTML to prevent XSS
+/**
+ * Escape HTML to prevent XSS
+ * @param {string} text
+ * @returns {string}
+ */
 function escapeHtml(text) {
   const div = document.createElement('div')
   div.textContent = text
   return div.innerHTML
 }
 
-// Add new todo
+/**
+ * Add new todo
+ * @param {string} text
+ * @returns {void}
+ */
 function addTodo(text) {
   if (!text.trim()) return
 
@@ -93,7 +140,11 @@ function addTodo(text) {
   renderTodos()
 }
 
-// Toggle todo completion
+/**
+ * Toggle todo completion
+ * @param {string} id
+ * @returns {void}
+ */
 function toggleTodo(id) {
   const todos = getTodos()
   const todo = todos.find((t) => t.id === id)
@@ -104,17 +155,24 @@ function toggleTodo(id) {
   }
 }
 
-// Delete todo
+/**
+ * Delete todo
+ * @param {string} id
+ * @returns {void}
+ */
 function deleteTodo(id) {
   const todos = getTodos().filter((t) => t.id !== id)
   saveTodos(todos)
   renderTodos()
 }
 
-// Initialize todo functionality
+/**
+ * Initialize todo functionality
+ * @returns {void}
+ */
 function initTodo() {
-  const todoInput = document.getElementById('todo-input')
-  const addButton = document.getElementById('todo-add-btn')
+  const todoInput = getRequiredElement('todo-input', HTMLInputElement)
+  const addButton = getRequiredElement('todo-add-btn', HTMLButtonElement)
 
   // Add on button click
   addButton.addEventListener('click', () => {

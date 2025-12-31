@@ -1,16 +1,37 @@
 // News ticker using NRK RSS feed
 
+/**
+ * Require a DOM element by id and type.
+ * @template {HTMLElement} T
+ * @param {string} id
+ * @param {new (...args: any[]) => T} ctor
+ * @returns {T}
+ */
+function getRequiredElement(id, ctor) {
+  const el = document.getElementById(id)
+  if (!el || !(el instanceof ctor)) {
+    throw new Error(`Element #${id} missing or not a ${ctor.name}`)
+  }
+  return /** @type {T} */ (el)
+}
+
 const RSS_URL = 'https://www.nrk.no/toppsaker.rss'
 const NEWS_REFRESH_INTERVAL = 600000 // 10 minutes
 
-// CORS proxies to try (in order of preference)
+/**
+ * CORS proxies to try (in order of preference)
+ * @type {Array<(url: string) => string>}
+ */
 const CORS_PROXIES = [
   (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
   (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
 ]
 
-// Check if news is enabled via URL parameter
+/**
+ * Check if news is enabled via URL parameter
+ * @returns {boolean}
+ */
 function isNewsEnabled() {
   const params = new URLSearchParams(window.location.search)
   const newsParam = params.get('news')
@@ -18,7 +39,11 @@ function isNewsEnabled() {
   return newsParam !== 'off'
 }
 
-// Try fetching with multiple CORS proxies
+/**
+ * Try fetching with multiple CORS proxies
+ * @param {string} url
+ * @returns {Promise<string>}
+ */
 async function fetchWithProxy(url) {
   for (const proxyFn of CORS_PROXIES) {
     try {
@@ -35,9 +60,12 @@ async function fetchWithProxy(url) {
   throw new Error('All CORS proxies failed')
 }
 
-// Fetch and parse RSS feed
+/**
+ * Fetch and parse RSS feed
+ * @returns {Promise<void>}
+ */
 async function fetchNews() {
-  const tickerContent = document.getElementById('news-ticker-content')
+  const tickerContent = getRequiredElement('news-ticker-content', HTMLElement)
 
   try {
     const xmlText = await fetchWithProxy(RSS_URL)
@@ -45,6 +73,7 @@ async function fetchNews() {
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml')
 
     const items = xmlDoc.querySelectorAll('item')
+    /** @type {string[]} */
     const headlines = []
 
     items.forEach((item, index) => {
@@ -77,14 +106,21 @@ async function fetchNews() {
   }
 }
 
-// Escape HTML to prevent XSS
+/**
+ * Escape HTML to prevent XSS
+ * @param {string} text
+ * @returns {string}
+ */
 function escapeHtml(text) {
   const div = document.createElement('div')
   div.textContent = text
   return div.innerHTML
 }
 
-// Initialize news ticker
+/**
+ * Initialize news ticker
+ * @returns {void}
+ */
 function initNews() {
   if (!isNewsEnabled()) {
     const newsTicker = document.getElementById('news-ticker')

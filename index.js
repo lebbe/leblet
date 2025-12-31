@@ -1,3 +1,30 @@
+// @ts-check
+
+/**
+ * @typedef {Object} WeatherDetails
+ * @property {number} air_temperature
+ * @property {number} [wind_speed]
+ * @property {number} [precipitation_amount]
+ */
+
+/**
+ * @typedef {Object} WeatherSummary
+ * @property {string} symbol_code
+ */
+
+/**
+ * @typedef {Object} WeatherData
+ * @property {{ details: WeatherDetails }} instant
+ * @property {{ summary: WeatherSummary }} [next_1_hours]
+ * @property {{ summary: WeatherSummary }} [next_6_hours]
+ */
+
+/**
+ * @typedef {Object} TimeseriesEntry
+ * @property {string} time
+ * @property {WeatherData} data
+ */
+
 // Extract URL parameters
 const params = new URLSearchParams(window.location.search)
 const lat = params.get('lat')
@@ -16,8 +43,11 @@ if (!transport_url) {
   console.error('Missing required parameter: transport_url')
 }
 
-// Weather icon mapping based on MET.no symbol codes
-// Maps symbol codes to SVG icon filenames in /icons folder
+/**
+ * Weather icon mapping based on MET.no symbol codes
+ * Maps symbol codes to SVG icon filenames in /icons folder
+ * @type {Record<string, string>}
+ */
 const iconMap = {
   // Clear sky
   clearsky_day: 'clearsky_day',
@@ -124,7 +154,10 @@ const iconMap = {
     'heavysnowshowersandthunder_polartwilight',
 }
 
-// Weather description mapping
+/**
+ * Weather description mapping
+ * @type {Record<string, string>}
+ */
 const descriptionMap = {
   // Clear/fair
   clearsky: 'Klart',
@@ -176,16 +209,36 @@ const descriptionMap = {
   heavysnowshowersandthunder: 'Kraftige snøbyger og torden',
 }
 
-// DOM elements
-const currentIcon = document.getElementById('current-icon')
-const currentTemp = document.getElementById('current-temp')
-const weatherForecast = document.getElementById('weather-forecast')
-const sunriseTime = document.getElementById('sunrise-time')
-const sunsetTime = document.getElementById('sunset-time')
+/**
+ * Require a DOM element by id and type.
+ * @template {HTMLElement} T
+ * @param {string} id
+ * @param {new (...args: any[]) => T} ctor
+ * @returns {T}
+ */
+function getRequiredElement(id, ctor) {
+  const el = document.getElementById(id)
+  if (!el || !(el instanceof ctor)) {
+    throw new Error(`Element #${id} missing or not a ${ctor.name}`)
+  }
+  return /** @type {T} */ (el)
+}
 
-// Tab switching functionality
+// DOM elements
+const currentIcon = getRequiredElement('current-icon', HTMLElement)
+const currentTemp = getRequiredElement('current-temp', HTMLElement)
+const weatherForecast = getRequiredElement('weather-forecast', HTMLElement)
+const sunriseTime = getRequiredElement('sunrise-time', HTMLElement)
+const sunsetTime = getRequiredElement('sunset-time', HTMLElement)
+
+/**
+ * Tab switching functionality
+ * @returns {void}
+ */
 function initTabs() {
-  const tabButtons = document.querySelectorAll('.tab-btn')
+  const tabButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+    document.querySelectorAll('.tab-btn')
+  )
   const tabPanes = document.querySelectorAll('.tab-pane')
 
   tabButtons.forEach((btn) => {
@@ -207,20 +260,33 @@ function initTabs() {
   })
 }
 
-// Get icon HTML for symbol code
+/**
+ * Get icon HTML for symbol code
+ * @param {string} symbolCode
+ * @param {number} [size=48]
+ * @returns {string}
+ */
 function getIcon(symbolCode, size = 48) {
   const iconName = iconMap[symbolCode] || symbolCode
   return `<img src="icons/${iconName}.svg" alt="${symbolCode}" width="${size}" height="${size}" />`
 }
 
-// Get description for symbol code
+/**
+ * Get description for symbol code
+ * @param {string} symbolCode
+ * @returns {string}
+ */
 function getDescription(symbolCode) {
   // Remove _day, _night, _polartwilight suffixes for description lookup
   const baseSymbol = symbolCode.replace(/_(day|night|polartwilight)$/, '')
   return descriptionMap[baseSymbol] || symbolCode
 }
 
-// Format time for display
+/**
+ * Format time for display
+ * @param {string} isoString
+ * @returns {string}
+ */
 function formatTime(isoString) {
   const date = new Date(isoString)
   const now = new Date()
@@ -242,7 +308,11 @@ function formatTime(isoString) {
   }
 }
 
-// Render current weather in quick overview
+/**
+ * Render current weather in quick overview
+ * @param {TimeseriesEntry} current
+ * @returns {void}
+ */
 function renderCurrentWeather(current) {
   const temperature = current.data.instant.details.air_temperature
   const symbolCode =
@@ -254,15 +324,21 @@ function renderCurrentWeather(current) {
   currentTemp.textContent = `${Math.round(temperature)}°C`
 }
 
-// Render weather forecast
+/**
+ * Render weather forecast
+ * @param {TimeseriesEntry[]} timeseries
+ * @returns {void}
+ */
 function renderForecast(timeseries) {
   const now = new Date()
+  /** @type {TimeseriesEntry[]} */
   const forecastItems = []
+  /** @type {Date | null} */
   let lastIncludedTime = null
 
   for (const item of timeseries) {
     const itemTime = new Date(item.time)
-    const hoursFromNow = (itemTime - now) / (1000 * 60 * 60)
+    const hoursFromNow = (itemTime.getTime() - now.getTime()) / (1000 * 60 * 60)
 
     // Only include items within next 24 hours
     if (hoursFromNow < 0 || hoursFromNow > 24) continue
@@ -270,7 +346,7 @@ function renderForecast(timeseries) {
     // Include if it's the first item or at least 3 hours since last included
     if (
       lastIncludedTime === null ||
-      (itemTime - lastIncludedTime) / (1000 * 60 * 60) >= 3
+      (itemTime.getTime() - lastIncludedTime.getTime()) / (1000 * 60 * 60) >= 3
     ) {
       forecastItems.push(item)
       lastIncludedTime = itemTime
@@ -300,7 +376,10 @@ function renderForecast(timeseries) {
     .join('')
 }
 
-// Fetch and display weather data
+/**
+ * Fetch and display weather data
+ * @returns {Promise<void>}
+ */
 async function fetchWeather() {
   try {
     let weatherUrl = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`
@@ -331,7 +410,10 @@ async function fetchWeather() {
   }
 }
 
-// Fetch sunrise and sunset times from MET.no
+/**
+ * Fetch sunrise and sunset times from MET.no
+ * @returns {Promise<void>}
+ */
 async function fetchSunTimes() {
   try {
     const today = new Date().toISOString().split('T')[0]
@@ -372,9 +454,15 @@ async function fetchSunTimes() {
   }
 }
 
-// Transport iframe integration
+/**
+ * Transport iframe integration
+ * @returns {void}
+ */
 function initTransport() {
-  const transportFrame = document.getElementById('transport-frame')
+  const transportFrame = /** @type {HTMLIFrameElement | null} */ (
+    document.getElementById('transport-frame')
+  )
+  if (!transportFrame) return
 
   if (transport_url) {
     // Validate that the URL is from supported providers
